@@ -6,7 +6,6 @@ Created on 5 oct. 2017
 import os
 
 
-    
 def strip_list(list_of_words):
     '''
     Strip list of words before anything
@@ -21,6 +20,7 @@ def strip_list(list_of_words):
     
     return striped_list
 
+
 def get_normal_words(all_words):
     '''
     '''
@@ -33,11 +33,11 @@ def get_normal_words(all_words):
     
     return all_words
 
+
 def set_final_list_words(striped_words_list, normal_words_list):
     '''
     '''
     return striped_words_list+normal_words_list
-
 
 
 class CollectWords(object):
@@ -67,7 +67,6 @@ class CollectWords(object):
         for line in fp:
             refWords_list.append(line.strip('\n'))
             
-        
         return refWords_list
     
     def read_book(self):
@@ -118,9 +117,7 @@ class CollectWords(object):
                 print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
                 print('{word}: FOUND IN THE dictionary'.format(word =text_word))
                 print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-                   
-        
-        
+                  
         return word_to_define
                     
             
