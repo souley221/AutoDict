@@ -4,34 +4,7 @@
 
 import requests
 import json 
-from collectWords import CollectWords
 
-
-
-
-'''app_id = '1bc5f20b'
-app_key = 'fe800acc932e1b79ab4bed69ae13d208'
-
-language = 'en'
-word_id = 'torch'
-
-url = 'https://od-api.oxforddictionaries.com/api/v1/entries/' + language + '/' + word_id.lower() + '/synonyms'
-
-r = requests.get(url, headers = {'app_id': app_id, 'app_key': app_key})
-print(r.status_code)
-json_data= json.loads(r.text)
-
-print(type(json_data))
-print(json_data)
-
-for key, value in json_data.items():
-    print (key,value)
-
-for syno_dict in  json_data['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][0]['synonyms']:
-    print(syno_dict['id'])
-
-print (json_data['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][0]['synonyms'])
-#print(' '+json_res['results'])'''
 
 class ApiCallManager(object):
     '''Manage OxfordDictionary api call
@@ -44,6 +17,7 @@ class ApiCallManager(object):
         self.words_to_define = words_to_define
         self.api_parameters = {'url': api_dict['url'], 'language': api_dict['language'], 'api_id': api_dict['api_id'], 'api_key':api_dict['api_key'], 'word_id': words_to_define}
     
+    
     def make_urls(self):
         '''Make a list with all urls of all words to define
         @return list of urls 
@@ -55,6 +29,16 @@ class ApiCallManager(object):
         
         return url_list
     
+    
+    def make_word_to_define_dictionary(self):
+        '''Take all the xords to define and put them in a dictionary
+        '''
+        word_dict = {}
+        for word in self.words_to_define:
+            word_dict[word] = ''
+        return word_dict
+    
+
     def make_api_request(self):
         '''Make api request with each url
         @return list with all requested object
@@ -63,9 +47,8 @@ class ApiCallManager(object):
         print('This is my urls:',all_urls)
         request_list =[]
         for url in all_urls:
-            request_list.append(requests.get(url, headers = {'api_id':self.api_parameters['api_id'], 'app_key':self.api_parameters['api_key']}))
-        return requests
-    
+            request_list.append(requests.get(url, headers = {'app_id':self.api_parameters['api_id'], 'app_key':self.api_parameters['api_key']}))
+        return request_list
     
     
     def make_words_dict(self):
@@ -75,24 +58,29 @@ class ApiCallManager(object):
         requested_urls = self.make_api_request()
         print('This are the requested urls', requested_urls)
         json_data = []
-        words_dict = {}
-        print('This is the type of the requested_urls', type(requested_urls))
         for req_url in requested_urls:
             if req_url.status_code ==200:
                 json_data.append(json.loads(req_url.text))
-                words_dict.pop(json_data['results'][0]['word'])
-        print('This are the words', words_dict)
-        return words_dict
- 
-instance0 = CollectWords('refWords.txt','test_txt.txt')
-word_id = instance0.parse_text()
-#print(a)
-#print(len(a))'''              
-           
-api_dict = {'url':'https://od-api.oxforddictionaries.com/api/v1/entries/', 'language':'en', 'api_id': '1bc5f20b', 'api_key': 'fe800acc932e1b79ab4bed69ae13d208', 'word_id':word_id }
-instance = ApiCallManager(word_id,api_dict)
-words_dict = instance.make_words_dict()
-print('This is the dict',words_dict)
+                
+        return json_data
+    
+    def set_definitions(self):
+        '''Set definitons of my dictionary words
+        '''
+        json_data = self.make_words_dict()
+        non_def_dict = self.make_word_to_define_dictionary()
+        
+        for index in range (len(json_data)):
+            for syno_dict in json_data[index]['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][0]['synonyms']:
+                non_def_dict[json_data[index]['results'][0]['word']]=syno_dict['id']
+        for key in non_def_dict.keys():
+            if non_def_dict[key]=='':
+                del non_def_dict[key]
+                
+        return non_def_dict
+        
+
+
             
             
             
